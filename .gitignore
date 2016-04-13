@@ -30,3 +30,7 @@
 
 # Debug files
 *.dSYM/
+
+# leader_follower: only track source files
+.settings/
+gcc/
