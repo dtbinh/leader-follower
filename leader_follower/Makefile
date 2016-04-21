@@ -52,6 +52,10 @@ ${COMPILER}:
 # Rules for building the EvalBot Autonomous Drive Quickstart Example.
 #
 ${COMPILER}/leader_follower.axf: ${COMPILER}/main.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/lsMotors.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/lsUtility.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/motor.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/sensors.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/startup_${COMPILER}.o
 ${COMPILER}/leader_follower.axf: ${ROOT}/driverlib/${COMPILER}-cm3/libdriver-cm3.a
 ${COMPILER}/leader_follower.axf: leader_follower.ld

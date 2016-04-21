@@ -34,3 +34,4 @@
 # leader_follower: only track source files
 .settings/
 gcc/
+*.launch
