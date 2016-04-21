@@ -1,5 +1,5 @@
 /*
- * lsUtility.c
+ * lfUtility.c
  *
  *  Created on: Apr 20, 2016
  *      Author: user
@@ -8,7 +8,7 @@
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
-#include "lsUtility.h"
+#include "lfUtility.h"
 
 // The number of SysTick ticks per second used for the SysTick interrupt.
 #define SYSTICKS_PER_SECOND     1000
@@ -33,7 +33,7 @@ void sleep(const unsigned int millis)
    while (gblMillis < stop);
 }
 
-void lsUtilInit()
+void lfUtilInit()
 {
    // Configure SysTick to occur n times per second, to use as a time
    // reference.  Enable SysTick to generate interrupts.

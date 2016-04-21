@@ -1,12 +1,19 @@
 /*
- * lsUtility.h
+ * lfUtility.h
  *
  *  Created on: Apr 20, 2016
  *      Author: user
  */
 
-#ifndef LSUTILITY_H_
-#define LSUTILITY_H_
+#ifndef LFUTILITY_H_
+#define LFUTILITY_H_
+
+// States of the follower robot
+typedef enum FollowerState
+{
+   SEARCH,
+   FOLLOW
+} FollowerState;
 
 // Returns the current system time, in milliseconds.
 unsigned long getSysTicks();
@@ -16,6 +23,6 @@ unsigned long getSysTicks();
 void sleep(const unsigned int millis);
 
 // Initialize the utility functions.
-void lsUtilInit();
+void lfUtilInit();
 
-#endif /* LSUTILITY_H_ */
+#endif /* LFUTILITY_H_ */

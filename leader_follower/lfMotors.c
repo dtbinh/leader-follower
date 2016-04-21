@@ -1,5 +1,5 @@
 /*
- * lsMotors.c
+ * lfMotors.c
  *
  *  Created on: Apr 20, 2016
  *      Author: user
@@ -8,7 +8,7 @@
 #include "inc/hw_types.h"
 #include "drivers/motor.h"
 #include "drivers/sensors.h"
-#include "lsMotors.h"
+#include "lfMotors.h"
 
 // Number of encoder ticks per wheel rotation
 #define ENTICKS_PER_REV 8
@@ -197,7 +197,7 @@ void turn(int degrees)
    rightMotorState = MS_STOPPED;
 }
 
-void lsMotorsInit()
+void lfMotorsInit()
 {
    // Initialize Motors
    MotorsInit();

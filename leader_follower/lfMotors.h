@@ -1,12 +1,12 @@
 /*
- * lsMotors.h
+ * lfMotors.h
  *
  *  Created on: Apr 20, 2016
  *      Author: user
  */
 
-#ifndef LSMOTORS_H_
-#define LSMOTORS_H_
+#ifndef LFMOTORS_H_
+#define LFMOTORS_H_
 
 #include <stdbool.h>
 
@@ -23,7 +23,7 @@ void moveBackward(const unsigned int inches,
 void turn(int degrees);
 
 // Initialize the motor functions.
-void lsMotorsInit();
+void lfMotorsInit();
 
 
-#endif /* LSMOTORS_H_ */
+#endif /* LFMOTORS_H_ */
