@@ -79,10 +79,84 @@ void PortEHandler(const tWheel sensor)
    }
 }
 
-void turn90(const bool clockwise)
+// Moves straight, either forwards or backwards, a set distance at either 80% or 40% PWM
+static void moveStraight(const bool forward,
+                         const unsigned int inches,
+                         const bool fast)
+{
+   const tDirection dir = forward ? FORWARD : REVERSE;
+   const MotorState ms  = forward ? MS_FORWARD : MS_REVERSE;
+   const unsigned short duty = fast ? 80 << 8 : 40 << 8;
+
+   MotorDir(LEFT_SIDE, dir);
+   MotorDir(RIGHT_SIDE, dir);
+   leftMotorState = ms;
+   rightMotorState = ms;
+
+   MotorSpeed(LEFT_SIDE, duty);
+   MotorSpeed(RIGHT_SIDE, duty);
+
+   MotorRun(LEFT_SIDE);
+   MotorRun(RIGHT_SIDE);
+
+   // wait until the action has completed
+   if (forward)
+   {
+      const double distanceStop = gblDistanceLeft + inches;
+      do
+      {
+      } while(gblDistanceLeft < distanceStop);
+   }
+   else
+   {
+      const double distanceStop = gblDistanceLeft - inches;
+      do
+      {
+      } while(gblDistanceLeft > distanceStop);
+   }
+
+   MotorStop(LEFT_SIDE);
+   MotorStop(RIGHT_SIDE);
+   leftMotorState = MS_STOPPED;
+   rightMotorState = MS_STOPPED;
+}
+
+void moveForward(const unsigned int inches,
+                 const bool fast)
+{
+   moveStraight(true, inches, fast);
+}
+
+void moveBackward(const unsigned int inches,
+                  const bool fast)
+{
+   moveStraight(false, inches, fast);
+}
+
+void turn(int degrees)
 {
    // Number of inches per wheel movement in circle; r = inter_wheel / 2; d = pi * r / 2
    static const double INCH_PER_90  = M_PI_4 * INTER_WHEEL_DIAMETER;
+   const int LIMIT = 90;
+
+   if (degrees == 0)
+   {
+      return;
+   }
+
+   // bound degrees
+   degrees = (degrees > LIMIT) ? LIMIT : degrees;
+   degrees = (degrees < -LIMIT) ? -LIMIT : degrees;
+
+   bool clockwise = false;
+   // determine if clockwise, and get abs() of degrees for distance calculation
+   if (degrees < 0)
+   {
+      clockwise = true;
+      degrees = degrees * -1;
+   }
+
+   const double turnDistance = INCH_PER_90 * ((double)degrees / (double)LIMIT);
 
    const tDirection dirL      = clockwise ? FORWARD : REVERSE;
    const tDirection dirR      = clockwise ? REVERSE : FORWARD;
@@ -104,14 +178,14 @@ void turn90(const bool clockwise)
    // wait until the action has completed
    if (clockwise)
    {
-      const double distanceStop = gblDistanceLeft + INCH_PER_90;
+      const double distanceStop = gblDistanceLeft + turnDistance;
       do
       {
       } while(gblDistanceLeft < distanceStop);
    }
    else
    {
-      const double distanceStop  = gblDistanceRight + INCH_PER_90;
+      const double distanceStop  = gblDistanceRight + turnDistance;
       do
       {
       } while(gblDistanceRight < distanceStop);

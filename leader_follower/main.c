@@ -19,9 +19,26 @@ static void runStateMachine(void)
 {
    while(1)
    {
-      turn90(true);
+      /* test behaviors */
+      turn(-90);
       sleep(5000);
-      turn90(false);
+      turn(90);
+      sleep(5000);
+
+      turn(-45);
+      sleep(2000);
+      turn(-45);
+      sleep(2000);
+      turn(45);
+      sleep(2000);
+      turn(45);
+      sleep(2000);
+
+      moveForward(2, true);
+      moveBackward(2, true);
+      sleep(5000);
+      moveForward(2, false);
+      moveBackward(2, false);
       sleep(5000);
    }
 }
