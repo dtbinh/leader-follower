@@ -53,6 +53,75 @@ void lfSensorsGetReading(const IRSensors sensor,
    ADCSequenceDataGet(ADC0_BASE, sequencer, sVal);
 }
 
+void lfSensorsMapDistance(const unsigned long sVal,
+                          IrDistance * const distance)
+{
+   if (sVal > DIST_BIN_10)
+   {
+      *distance = DIST_MIN;
+   }
+   else if (sVal > DIST_BIN_15)
+   {
+      *distance = DIST_10;
+   }
+   else if (sVal > DIST_BIN_20)
+   {
+      *distance = DIST_15;
+   }
+   else if (sVal > DIST_BIN_25)
+   {
+      *distance = DIST_20;
+   }
+   else if (sVal > DIST_BIN_30)
+   {
+      *distance = DIST_25;
+   }
+   else if (sVal > DIST_BIN_35)
+   {
+      *distance = DIST_30;
+   }
+   else if (sVal > DIST_BIN_40)
+   {
+      *distance = DIST_35;
+   }
+   else if (sVal > DIST_BIN_45)
+   {
+      *distance = DIST_40;
+   }
+   else if (sVal > DIST_BIN_50)
+   {
+      *distance = DIST_45;
+   }
+   else if (sVal > DIST_BIN_55)
+   {
+      *distance = DIST_50;
+   }
+   else if (sVal > DIST_BIN_60)
+   {
+      *distance = DIST_55;
+   }
+   else if (sVal > DIST_BIN_70)
+   {
+      *distance = DIST_60;
+   }
+   else if (sVal > DIST_BIN_80)
+   {
+      *distance = DIST_70;
+   }
+   else if (sVal > DIST_BIN_90)
+   {
+      *distance = DIST_80;
+   }
+   else if (sVal > DIST_BIN_MAX)
+   {
+      *distance = DIST_90;
+   }
+   else
+   {
+      *distance = DIST_MAX;
+   }
+}
+
 void lfSensorsInit()
 {
    // Enable ADC0 peripheral
