@@ -10,9 +10,11 @@
 
 #include "lfUtility.h"
 
-/// Display the state and the estimated distance to the leader.
+/// Display the state and the estimated distance to the leader (left and right sensors).
 /// If distance is less than 0 it is not displayed.
-void lfUpdateDisplay(const FollowerState state, const int distance);
+void lfUpdateDisplay(const FollowerState state,
+                     const int distanceL,
+                     const int distanceR);
 
 // Initialize the display functions.
 void lfDisplayInit();
