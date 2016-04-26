@@ -16,16 +16,18 @@
 #define SEARCH_STR "SEARCH"
 #define DIST_STR   "DIST"
 
-void lfUpdateDisplay(const FollowerState state, const int distance)
+void lfUpdateDisplay(const FollowerState state,
+                     const int distanceL,
+                     const int distanceR)
 {
    const char * const stateStr = (state == FOLLOW) ? FOLLOW_STR : SEARCH_STR;
    Display96x16x1StringDrawCentered(stateStr, 0, true);
 
    // don't display distance if less than 0
-   if (distance >= 0)
+   if ((distanceL >= 0) && (distanceR >=0))
    {
       char distStr[32] = { 0 };
-      usnprintf(distStr, sizeof(distStr), "%s: %d", DIST_STR, distance);
+      usnprintf(distStr, sizeof(distStr), "%s: %04d %04d", DIST_STR, distanceL, distanceR);
       Display96x16x1StringDrawCentered(distStr, 1, true);
    }
    else

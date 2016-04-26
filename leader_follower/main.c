@@ -12,39 +12,54 @@
 
 #include "lfDisplay.h"
 #include "lfMotors.h"
+#include "lfSensors.h"
 #include "lfUtility.h"
 
+#if 0
+// Self-test routines
+static void selfTest(void)
+{
+   /* test behaviors */
+   turn(-90);
+   sleep(5000);
+   turn(90);
+   sleep(5000);
+
+   lfUpdateDisplay(SEARCH, -1, -1);
+
+   turn(-45);
+   sleep(2000);
+   turn(-45);
+   sleep(2000);
+   turn(45);
+   sleep(2000);
+   turn(45);
+   sleep(2000);
+
+   lfUpdateDisplay(FOLLOW, 5, 15);
+
+   moveForward(2, true);
+   moveBackward(2, true);
+   sleep(5000);
+   moveForward(2, false);
+   moveBackward(2, false);
+   sleep(5000);
+}
+#endif
+
+// State machine implementing run-time logic for leader or follower
 static void runStateMachine(void)
 {
-   lfUpdateDisplay(FOLLOW, 5);
+   lfUpdateDisplay(FOLLOW, 5, 15);
 
    while(1)
    {
-      /* test behaviors */
-      turn(-90);
-      sleep(5000);
-      turn(90);
-      sleep(5000);
-
-      lfUpdateDisplay(SEARCH, -1);
-
-      turn(-45);
-      sleep(2000);
-      turn(-45);
-      sleep(2000);
-      turn(45);
-      sleep(2000);
-      turn(45);
-      sleep(2000);
-
-      lfUpdateDisplay(FOLLOW, 5);
-
-      moveForward(2, true);
-      moveBackward(2, true);
-      sleep(5000);
-      moveForward(2, false);
-      moveBackward(2, false);
-      sleep(5000);
+      unsigned long irLeftVal;
+      unsigned long irRightVal;
+      lfSensorsGetReading(IR_LEFT, &irLeftVal);
+      lfSensorsGetReading(IR_RIGHT, &irRightVal);
+      lfUpdateDisplay(FOLLOW, irLeftVal, irRightVal);
+      sleep(500);
    }
 }
 
@@ -56,6 +71,7 @@ static void initialize(void)
 
    lfUtilInit();
    lfMotorsInit();
+   lfSensorsInit();
    lfDisplayInit();
 
    // Enable interrupts to the CPU
