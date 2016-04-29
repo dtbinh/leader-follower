@@ -15,7 +15,7 @@
 #include "lfMotors.h"
 #include "lfSensors.h"
 #include "lfUtility.h"
-
+#include "lfWanderBehavior.h"
 
 /****************************************************************
  * These two preprocessors dictate which binary you are building.
@@ -125,7 +125,7 @@ static void runStateMachine(void)
 #ifdef LEADER_ROBOT
       if(currentState == WANDER)
       {
-         //wander();
+         wander();
       }
 #endif
    }
