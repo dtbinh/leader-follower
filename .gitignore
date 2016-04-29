@@ -13,6 +13,7 @@
 *.a
 *.la
 *.lo
+!leader_follower/driverlib/gcc-cm3/libdriver-cm3.a
 
 # Shared objects (inc. Windows DLLs)
 *.dll
