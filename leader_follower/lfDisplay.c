@@ -5,18 +5,21 @@
  *      Author: user
  */
 
-#include <utils/ustdlib.h>
-
 #include "inc/hw_types.h"
 #include "drivers/display96x16x1.h"
+#include "utils/ustdlib.h"
+
 #include "lfUtility.h"
+
+#include "lfDisplay.h"
 
 // Output string formats
 #define FOLLOW_STR "FOLLOW"
 #define SEARCH_STR "SEARCH"
+#define WANDER_STR "WANDER"
 #define DIST_STR   "DIST"
 
-void lfUpdateDisplay(const FollowerState state,
+void lfUpdateSensorDataDisplay(const RobotState state,
                      const int distanceL,
                      const int distanceR)
 {
@@ -34,6 +37,15 @@ void lfUpdateDisplay(const FollowerState state,
    {
       Display96x16x1ClearLine(1);
    }
+}
+
+void lfUpdateDisplay(const RobotState state, const char* msg)
+{
+   Display96x16x1ClearLine(1);
+
+   char distStr[32] = { 0 };
+   usnprintf(distStr, sizeof(distStr), "%s", msg);
+   Display96x16x1StringDrawCentered(distStr, 1, true);
 }
 
 void lfDisplayInit()
