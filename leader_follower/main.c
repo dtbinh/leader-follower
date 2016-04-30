@@ -62,7 +62,7 @@ static void pollAvgSensorVal(void)
    lfSensorsMapDistance(irLeftVal, &leftDist);
    lfSensorsMapDistance(irRightVal, &rightDist);
    lfUpdateDisplay(FOLLOW, leftDist, rightDist);
-   sleep(1000);
+   sleep(200);
 }
 
 // State machine implementing run-time logic for leader or follower

@@ -200,8 +200,8 @@ static void lfTimerInit(void)
    // Configure as a 32-bit periodic timer.
    TimerConfigure(TIMER_BASE, TIMER_CFG_PERIODIC);
 
-   // Set the load value to 200ms.
-   TimerLoadSet(TIMER_BASE, TIMER_BOTH, SysCtlClockGet() / 5);
+   // Set the load value to 100ms.
+   TimerLoadSet(TIMER_BASE, TIMER_BOTH, SysCtlClockGet() / 10);
 
    // Configure the interrupt for timer timeout.
    TimerIntEnable(TIMER_BASE, TIMER_TIMA_TIMEOUT);
