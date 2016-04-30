@@ -6,12 +6,10 @@
  */
 
 #include "inc/hw_types.h"
-
 #include "driverlib/udma.h"
 #include "drivers/dac.h"
 #include "drivers/sound.h"
 #include "drivers/wav.h"
-
 #include "sound_array.h"
 #include "lfSound.h"
 
@@ -36,10 +34,25 @@ tDMAControlTable sDMAControlTable[64] __attribute__ ((aligned(1024)));
 // Structure containing metadata for .wav that is currently playing.
 static tWaveHeader gblWaveHeader;
 
-void lfPlaySound(void)
+// waves
+static const tWaveClip FOLLOW_WAVE = { SOUND_FOLLOW, "Wav1"};
+static const tWaveClip SEARCH_WAVE = { SOUND_SEARCH, "Wav2"};
+
+void lfPlaySound(FollowerState state)
 {
-   // play a tune
-   const tWaveClip waveClip = { SOUND, "Wav1"};
+   tWaveClip waveClip;
+   if (state == FOLLOW)
+   {
+      waveClip = FOLLOW_WAVE;
+   }
+   else if (state == SEARCH)
+   {
+      waveClip = SEARCH_WAVE;
+   }
+   else
+   {
+      return;
+   }
 
    // Stop an existing tune.
    WaveStop();

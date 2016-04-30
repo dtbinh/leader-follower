@@ -6,6 +6,9 @@
 //
 //***************************************************************************
 
+#include "sound_array.h"
+
+#ifdef S_GUITAR
 const unsigned char SOUND[] =
 {
    /* gtr-nylon22.wav */
@@ -27632,4 +27635,6 @@ const unsigned char SOUND[] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00,
 };
-
+#else
+const unsigned char SOUND[] = {0x00};
+#endif

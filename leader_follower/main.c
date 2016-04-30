@@ -133,7 +133,7 @@ void runStateMachine(void *pvParam)
 
       state = (state == FOLLOW) ? SEARCH : FOLLOW;
 
-      lfPlaySound();
+      lfPlaySound(state);
    }
 }
 

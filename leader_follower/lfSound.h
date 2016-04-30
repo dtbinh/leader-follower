@@ -8,8 +8,10 @@
 #ifndef LFSOUND_H_
 #define LFSOUND_H_
 
-// Play the default sound. This is a blocking call.
-void lfPlaySound(void);
+#include "lfUtility.h"
+
+// Initiate playback of the sound corresponding to each state.
+void lfPlaySound(FollowerState state);
 
 // Continue playback of a sound, if any (scheduled task).
 void lfUpdateSound(void *pvParam);
