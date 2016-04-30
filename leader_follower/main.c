@@ -17,23 +17,27 @@
 #include "lfSound.h"
 #include "lfUtility.h"
 
-// Define NULL
-#ifndef NULL
-#define NULL                    ((void *)0)
-#endif
-
 // Number of system ticks per second
 #define TICKS_PER_SECOND 100
 
 // scheduled function prototypes
 static void runStateMachine(void *pvParam);
 
+// Arguments to display at every scheduled display task.
+static DisplayArgs gblDisplayArgs =
+{
+   .state = SEARCH,
+   .distanceL = -1,
+   .distanceR = -1
+};
+
 // This table defines all the tasks that the scheduler is to run, the periods
 // between calls to those tasks, and the parameter to pass to the task.
 tSchedulerTask g_psSchedulerTable[] =
 {
-   { runStateMachine, NULL, 0, 0, true },
-   { lfUpdateSound,   NULL, 4, 0, true }
+   { runStateMachine,      NULL,             0, 0, true },  // run every time
+   { lfUpdateSound,        NULL,             4, 0, true },  // run every 40 ms
+   { lfUpdateDisplayTask,  &gblDisplayArgs,  10, 0, true }  // run every 100 ms
 };
 
 // Indices of the various tasks described in g_psSchedulerTable.
@@ -77,33 +81,58 @@ static void selfTest(void)
 #endif
 
 // Average the sensor readings over 1 second to characterize them
-static void pollAvgSensorVal(void)
+static void pollAvgSensorVal(IrDistance * const leftDist,
+                             IrDistance * const rightDist)
 {
+   if ((leftDist == NULL) || (rightDist == NULL))
+   {
+      return;
+   }
+
    unsigned long irLeftVal;
    unsigned long irRightVal;
-
    lfSensorsGetReading(IR_LEFT, &irLeftVal);
    lfSensorsGetReading(IR_RIGHT, &irRightVal);
 
     // output est distance
-   IrDistance leftDist;
-   IrDistance rightDist;
-   lfSensorsMapDistance(irLeftVal, &leftDist);
-   lfSensorsMapDistance(irRightVal, &rightDist);
-   lfUpdateDisplay(FOLLOW, leftDist, rightDist);
+   lfSensorsMapDistance(irLeftVal, leftDist);
+   lfSensorsMapDistance(irRightVal, rightDist);
 }
 
 // State machine implementing run-time logic for leader or follower (scheduled task)
 // This function must not sleep.
 void runStateMachine(void *pvParam)
 {
-   pollAvgSensorVal();
+   static FollowerState state = SEARCH;
 
-   // change states ever 10 seconds
+   // always check distance
+   IrDistance leftDist;
+   IrDistance rightDist;
+   pollAvgSensorVal(&leftDist, &rightDist);
+
+   if (state == FOLLOW)
+   {
+      // update display args
+      gblDisplayArgs.state       = FOLLOW;
+      gblDisplayArgs.distanceL   = leftDist;
+      gblDisplayArgs.distanceR   = rightDist;
+   }
+   else if (state == SEARCH)
+   {
+      // update display args
+      gblDisplayArgs.state       = SEARCH;
+      gblDisplayArgs.distanceL   = -1;
+      gblDisplayArgs.distanceR   = -1;
+   }
+
+   // change states ever 10 seconds for verification
    static unsigned long lastChange = 0;
    if (SchedulerElapsedTicksGet(lastChange) > (TICKS_PER_SECOND * 10))
    {
       lastChange = SchedulerTickCountGet();
+
+      state = (state == FOLLOW) ? SEARCH : FOLLOW;
+
       lfPlaySound();
    }
 }

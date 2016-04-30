@@ -8,6 +8,11 @@
 #ifndef LFUTILITY_H_
 #define LFUTILITY_H_
 
+// Define NULL
+#ifndef NULL
+#define NULL                    ((void *)0)
+#endif
+
 // States of the follower robot
 typedef enum FollowerState
 {
