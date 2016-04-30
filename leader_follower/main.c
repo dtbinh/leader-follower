@@ -13,6 +13,7 @@
 #include "lfDisplay.h"
 #include "lfMotors.h"
 #include "lfSensors.h"
+#include "lfSound.h"
 #include "lfUtility.h"
 
 #if 0
@@ -73,6 +74,7 @@ static void runStateMachine(void)
    while(1)
    {
       pollAvgSensorVal();
+      lfPlaySound();
    }
 }
 
@@ -86,6 +88,7 @@ static void initialize(void)
    lfMotorsInit();
    lfSensorsInit();
    lfDisplayInit();
+   lfSoundInit();
 
    // Enable interrupts to the CPU
    IntMasterEnable();
