@@ -10,6 +10,17 @@
 
 #include "lfUtility.h"
 
+// Function arguments in a packed structure
+typedef struct DisplayArgs
+{
+   FollowerState state;
+   int distanceL;
+   int distanceR;
+} DisplayArgs;
+
+// lfUpdateDisplay with packed args (scheduled task)
+void lfUpdateDisplayTask(void *pvParam);
+
 /// Display the state and the estimated distance to the leader (left and right sensors).
 /// If distance is less than 0 it is not displayed.
 void lfUpdateDisplay(const FollowerState state,

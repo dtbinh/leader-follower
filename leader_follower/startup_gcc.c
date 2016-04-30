@@ -37,7 +37,8 @@ static void IntDefaultHandler(void);
 // External declarations for the interrupt handlers used by the application.
 //
 //*****************************************************************************
-extern void SysTickHandler(void);
+extern void SchedulerSysTickIntHandler(void);
+extern void SoundIntHandler(void);
 extern void TimerIntHandler(void);
 extern void WheelSensorIntHandler();
 
@@ -80,7 +81,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Debug monitor handler
     0,                                      // Reserved
     IntDefaultHandler,                      // The PendSV handler
-    SysTickHandler,                         // The SysTick handler
+    SchedulerSysTickIntHandler,             // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
@@ -133,7 +134,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // ADC1 Sequence 1
     IntDefaultHandler,                      // ADC1 Sequence 2
     IntDefaultHandler,                      // ADC1 Sequence 3
-    IntDefaultHandler,                      // I2S0
+    SoundIntHandler,                        // I2S0
     IntDefaultHandler,                      // External Bus Interface 0
     IntDefaultHandler                       // GPIO Port J
 };
