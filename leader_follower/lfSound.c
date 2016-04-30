@@ -33,21 +33,32 @@ tDMAControlTable sDMAControlTable[64];
 tDMAControlTable sDMAControlTable[64] __attribute__ ((aligned(1024)));
 #endif
 
-void lfPlaySound()
+// Structure containing metadata for .wav that is currently playing.
+static tWaveHeader gblWaveHeader;
+
+void lfPlaySound(void)
 {
    // play a tune
    const tWaveClip waveClip = { SOUND, "Wav1"};
-   tWaveHeader sWaveHeader;
-   if(WaveOpen((unsigned long *) waveClip.pucWav, &sWaveHeader) == WAVE_OK)
+
+   // Stop an existing tune.
+   WaveStop();
+
+   if(WaveOpen((unsigned long *) waveClip.pucWav, &gblWaveHeader) == WAVE_OK)
    {
-      WavePlayStart(&sWaveHeader);
-      while (!WavePlayContinue(&sWaveHeader))
-      {
-      }
+      WavePlayStart(&gblWaveHeader);
    }
 }
 
-void lfSoundInit()
+void lfUpdateSound(void *pvParam)
+{
+   if (WavePlaybackStatus())
+   {
+      WavePlayContinue(&gblWaveHeader);
+   }
+}
+
+void lfSoundInit(void)
 {
    // Initialize the sound driver
    SoundInit();

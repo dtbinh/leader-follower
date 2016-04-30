@@ -9,12 +9,40 @@
 #include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/sysctl.h"
+#include "utils/scheduler.h"
 
 #include "lfDisplay.h"
 #include "lfMotors.h"
 #include "lfSensors.h"
 #include "lfSound.h"
 #include "lfUtility.h"
+
+// Define NULL
+#ifndef NULL
+#define NULL                    ((void *)0)
+#endif
+
+// Number of system ticks per second
+#define TICKS_PER_SECOND 100
+
+// scheduled function prototypes
+static void runStateMachine(void *pvParam);
+
+// This table defines all the tasks that the scheduler is to run, the periods
+// between calls to those tasks, and the parameter to pass to the task.
+tSchedulerTask g_psSchedulerTable[] =
+{
+   { runStateMachine, NULL, 0, 0, true },
+   { lfUpdateSound,   NULL, 4, 0, true }
+};
+
+// Indices of the various tasks described in g_psSchedulerTable.
+#define TASK_STATE_MACHINE 0
+#define TASK_UPDATE_SOUND  1
+
+// The number of entries in the global scheduler task table.
+unsigned long g_ulSchedulerNumTasks = (sizeof(g_psSchedulerTable) /
+                                       sizeof(tSchedulerTask));
 
 #if 0
 // Self-test routines
@@ -63,17 +91,19 @@ static void pollAvgSensorVal(void)
    lfSensorsMapDistance(irLeftVal, &leftDist);
    lfSensorsMapDistance(irRightVal, &rightDist);
    lfUpdateDisplay(FOLLOW, leftDist, rightDist);
-   sleep(200);
 }
 
-// State machine implementing run-time logic for leader or follower
-static void runStateMachine(void)
+// State machine implementing run-time logic for leader or follower (scheduled task)
+// This function must not sleep.
+void runStateMachine(void *pvParam)
 {
-   lfUpdateDisplay(FOLLOW, 5, 15);
+   pollAvgSensorVal();
 
-   while(1)
+   // change states ever 10 seconds
+   static unsigned long lastChange = 0;
+   if (SchedulerElapsedTicksGet(lastChange) > (TICKS_PER_SECOND * 10))
    {
-      pollAvgSensorVal();
+      lastChange = SchedulerTickCountGet();
       lfPlaySound();
    }
 }
@@ -84,11 +114,13 @@ static void initialize(void)
    // Set the system clock to run at 50MHz from the PLL
    SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
-   lfUtilInit();
    lfMotorsInit();
    lfSensorsInit();
    lfDisplayInit();
    lfSoundInit();
+
+   // Initialize the task scheduler.
+   SchedulerInit(TICKS_PER_SECOND);
 
    // Enable interrupts to the CPU
    IntMasterEnable();
@@ -100,7 +132,11 @@ int main(void)
 {
    initialize();
 
-   runStateMachine();
+   while(1)
+   {
+      // Tell the scheduler to call any periodic tasks that are due to be called.
+      SchedulerRun();
+   }
 
    return 0;
 }

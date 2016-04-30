@@ -9,9 +9,12 @@
 #define LFSOUND_H_
 
 // Play the default sound. This is a blocking call.
-void lfPlaySound();
+void lfPlaySound(void);
+
+// Continue playback of a sound, if any (scheduled task).
+void lfUpdateSound(void *pvParam);
 
 // Initialize the sound functions.
-void lfSoundInit();
+void lfSoundInit(void);
 
 #endif /* LFSOUND_H_ */
