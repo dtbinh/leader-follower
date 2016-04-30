@@ -50,34 +50,19 @@ static void selfTest(void)
 // Average the sensor readings over 1 second to characterize them
 static void pollAvgSensorVal(void)
 {
-   // sample each sensor multiple times and average
-   const int SAMPLES = 5;
    unsigned long irLeftVal;
    unsigned long irRightVal;
-   unsigned long irLeftAvgVal = 0;
-   unsigned long irRightAvgVal = 0;
 
-   for (int i = 0; i < SAMPLES; ++i)
-   {
-      lfSensorsGetReading(IR_LEFT, &irLeftVal);
-      lfSensorsGetReading(IR_RIGHT, &irRightVal);
+   lfSensorsGetReading(IR_LEFT, &irLeftVal);
+   lfSensorsGetReading(IR_RIGHT, &irRightVal);
 
-      irLeftAvgVal += irLeftVal;
-      irRightAvgVal += irRightVal;
-
-      sleep(200);
-   }
-
-   irLeftAvgVal /= SAMPLES;
-   irRightAvgVal /= SAMPLES;
-   //lfUpdateDisplay(FOLLOW, irLeftAvgVal, irRightAvgVal);
-
-   // output est distance
+    // output est distance
    IrDistance leftDist;
    IrDistance rightDist;
-   lfSensorsMapDistance(irLeftAvgVal, &leftDist);
-   lfSensorsMapDistance(irRightAvgVal, &rightDist);
+   lfSensorsMapDistance(irLeftVal, &leftDist);
+   lfSensorsMapDistance(irRightVal, &rightDist);
    lfUpdateDisplay(FOLLOW, leftDist, rightDist);
+   sleep(200);
 }
 
 // State machine implementing run-time logic for leader or follower
