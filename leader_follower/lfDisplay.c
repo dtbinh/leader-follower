@@ -19,9 +19,21 @@
 #define WANDER_STR "WANDER"
 #define DIST_STR   "DIST"
 
+
+void lfUpdateDisplayTask(void *pvParam)
+{
+   if (pvParam == NULL)
+   {
+      return;
+   }
+
+   DisplayArgs * argsPtr = pvParam;
+   lfUpdateSensorDataDisplay(argsPtr->state, argsPtr->distanceL, argsPtr->distanceR);
+}
+
 void lfUpdateSensorDataDisplay(const RobotState state,
-                     const int distanceL,
-                     const int distanceR)
+                               const int distanceL,
+                               const int distanceR)
 {
    const char * const stateStr = (state == FOLLOW) ? FOLLOW_STR : SEARCH_STR;
    Display96x16x1StringDrawCentered(stateStr, 0, true);

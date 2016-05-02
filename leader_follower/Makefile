@@ -57,9 +57,16 @@ ${COMPILER}/leader_follower.axf: ${COMPILER}/lfMotors.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfSensors.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfUtility.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfWanderBehavior.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/lfSound.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/sound_array.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/sound_array_ti.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/display96x16x1.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/dac.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/motor.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/scheduler.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/sensors.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/sound.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/wav.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/ustdlib.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/startup_${COMPILER}.o
 ${COMPILER}/leader_follower.axf: ${ROOT}/driverlib/${COMPILER}-cm3/libdriver-cm3.a

@@ -10,10 +10,12 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/sysctl.h"
 #include "utils/ustdlib.h"
+#include "utils/scheduler.h"
 
 #include "lfDisplay.h"
 #include "lfMotors.h"
 #include "lfSensors.h"
+#include "lfSound.h"
 #include "lfUtility.h"
 #include "lfWanderBehavior.h"
 
@@ -25,9 +27,39 @@
 #define LEADER_ROBOT
 //#define FOLLOWER_ROBOT
 
-// Current state of the robot's autonomy state machine
-RobotState currentState;
+// Number of system ticks per second
+#define TICKS_PER_SECOND 100
 
+// scheduled function prototypes
+static void runStateMachine(void *pvParam);
+
+// Arguments to display at every scheduled display task.
+static DisplayArgs gblDisplayArgs =
+{
+   // Current state of the robot's autonomy state machine
+   .state = SEARCH,
+
+   // Current distance value of the left/right IR sensors
+   .distanceL = -1,
+   .distanceR = -1
+};
+
+// This table defines all the tasks that the scheduler is to run, the periods
+// between calls to those tasks, and the parameter to pass to the task.
+tSchedulerTask g_psSchedulerTable[] =
+{
+   { runStateMachine,      NULL,             0, 0, true },  // run every time
+   { lfUpdateSound,        NULL,             4, 0, true },  // run every 40 ms
+   { lfUpdateDisplayTask,  &gblDisplayArgs,  10, 0, true }  // run every 100 ms
+};
+
+// Indices of the various tasks described in g_psSchedulerTable.
+#define TASK_STATE_MACHINE 0
+#define TASK_UPDATE_SOUND  1
+
+// The number of entries in the global scheduler task table.
+unsigned long g_ulSchedulerNumTasks = (sizeof(g_psSchedulerTable) /
+                                       sizeof(tSchedulerTask));
 
 #if 0
 // Self-test routines
@@ -61,75 +93,77 @@ static void selfTest(void)
 }
 #endif
 
+
+
+#ifdef FOLLOWER_ROBOT
+
 // Average the sensor readings over 1 second to characterize them
-static void pollAvgSensorVal(void)
+static void pollAvgSensorVal(IrDistance * const leftDist,
+                             IrDistance * const rightDist)
 {
-   // sample each sensor multiple times and average
-   const int SAMPLES = 5;
+   if ((leftDist == NULL) || (rightDist == NULL))
+   {
+      return;
+   }
+
    unsigned long irLeftVal;
    unsigned long irRightVal;
-   unsigned long irLeftAvgVal = 0;
-   unsigned long irRightAvgVal = 0;
-
-   for (int i = 0; i < SAMPLES; ++i)
-   {
-      lfSensorsGetReading(IR_LEFT, &irLeftVal);
-      lfSensorsGetReading(IR_RIGHT, &irRightVal);
-
-      irLeftAvgVal += irLeftVal;
-      irRightAvgVal += irRightVal;
-
-      sleep(200);
-   }
-
-   irLeftAvgVal /= SAMPLES;
-   irRightAvgVal /= SAMPLES;
-   //lfUpdateDisplay(FOLLOW, irLeftAvgVal, irRightAvgVal);
+   lfSensorsGetReading(IR_LEFT, &irLeftVal);
+   lfSensorsGetReading(IR_RIGHT, &irRightVal);
 
    // output est distance
+   lfSensorsMapDistance(irLeftVal, leftDist);
+   lfSensorsMapDistance(irRightVal, rightDist);
+}
+
+
+// State machine implementing run-time logic for the follower robot (scheduled task)
+// This function must not sleep.
+void runStateMachine(void *pvParam)
+{
+   // always check distance
    IrDistance leftDist;
    IrDistance rightDist;
-   lfSensorsMapDistance(irLeftAvgVal, &leftDist);
-   lfSensorsMapDistance(irRightAvgVal, &rightDist);
-   lfUpdateSensorDataDisplay(FOLLOW, leftDist, rightDist);
-}
+   pollAvgSensorVal(&leftDist, &rightDist);
 
-// State machine implementing run-time logic for leader or follower
-static void runStateMachine(void)
-{
-   //lfUpdateDisplay(FOLLOW, 5, 15);
+   // update display args
+   gblDisplayArgs.distanceL = leftDist;
+   gblDisplayArgs.distanceR = rightDist;
 
-	// Initialize the state machine
-#ifdef FOLLOWER_ROBOT
-	currentState = SEARCH;
-#endif
-
-#ifdef LEADER_ROBOT
-	currentState = WANDER;
-#endif
-
-   while(1)
+   if(gblDisplayArgs.state == FOLLOW)
    {
-#ifdef FOLLOWER_ROBOT
-     pollAvgSensorVal();
+      //follow();
+   }
+   else if(gblDisplayArgs.state == SEARCH)
+   {
+      //search();
+   }
 
-	  if(currentState == FOLLOW)
-      {
-    	  //follow();
-      }
-      else if(currentState == SEARCH)
-      {
-    	  //search();
-      }
+   // change states ever 10 seconds for verification
+// static unsigned long lastChange = 0;
+// if(SchedulerElapsedTicksGet(lastChange) > (TICKS_PER_SECOND * 10))
+// {
+//    lastChange = SchedulerTickCountGet();
+//
+//    state = (state == FOLLOW) ? SEARCH : FOLLOW;
+//
+//    lfPlaySound(state);
+// }
+}
 #endif
+
 #ifdef LEADER_ROBOT
-      if(currentState == WANDER)
-      {
-         wander();
-      }
-#endif
+// State machine implementing run-time logic for the leader robot (scheduled task)
+// This function must not sleep.
+void runStateMachine(void *pvParam)
+{
+   // TODO: The leader robot only has one state
+   if (gblDisplayArgs.state == WANDER)
+   {
+      wander();
    }
 }
+#endif
 
 // Perform module initialization
 static void initialize(void)
@@ -137,9 +171,12 @@ static void initialize(void)
    // Set the system clock to run at 50MHz from the PLL
    SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
-   lfUtilInit();
    lfMotorsInit();
    lfDisplayInit();
+   lfSoundInit();
+
+   // Initialize the task scheduler.
+   SchedulerInit(TICKS_PER_SECOND);
 
    // Initialize the IR sensors only for the follower robot
 #ifdef FOLLOWER_ROBOT
@@ -148,6 +185,15 @@ static void initialize(void)
 
    // Enable interrupts to the CPU
    IntMasterEnable();
+
+   // Initialize the state machine
+#ifdef FOLLOWER_ROBOT
+   gblDisplayArgs.state = SEARCH;
+#endif
+
+#ifdef LEADER_ROBOT
+   gblDisplayArgs.state = WANDER;
+#endif
 }
 /**
  * Main function - leader_follower
@@ -160,7 +206,11 @@ int main(void)
 
    initialize();
 
-   runStateMachine();
+   while(1)
+   {
+      // Tell the scheduler to call any periodic tasks that are due to be called.
+      SchedulerRun();
+   }
 
    return 0;
 }
