@@ -13,6 +13,10 @@
 #define NULL                    ((void *)0)
 #endif
 
+// Define min/max operations
+#define MIN(X,Y) (((X) < (Y)) ? (X) : (Y))
+#define MAX(X,Y) (((X) > (Y)) ? (X) : (Y))
+
 // FSM states of the robot
 typedef enum RobotState
 {
