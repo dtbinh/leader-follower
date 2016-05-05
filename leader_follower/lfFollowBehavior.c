@@ -10,7 +10,7 @@
 #define MIN_COURSE_CORRECTION     2          // degrees
 #define TURN_THRESHOLD            30         // cm
 #define DRIVE_THRESHOLD           3          // inches
-#define NOMINAL_DIST_CM           DIST_20    // cm
+#define NOMINAL_DIST_CM           DIST_25    // cm
 #define MAX_DIST_TRAVEL_INCHES    6          // inches
 
 void follow(DisplayArgs * const args)
@@ -61,12 +61,14 @@ void follow(DisplayArgs * const args)
    {
       // Turn right
       turn(-MIN_COURSE_CORRECTION);
+      return;
    }
    else if(rightDistToNominalCm > leftDistToNominalCm &&
          (rightDistToNominalCm - leftDistToNominalCm) > TURN_THRESHOLD)
    {
       // Turn left
       turn(MIN_COURSE_CORRECTION);
+      return;
    }
    else
    {
@@ -81,7 +83,7 @@ void follow(DisplayArgs * const args)
    // and moveBackward() methods only expect positive numbers.
    if(travelDistInches > DRIVE_THRESHOLD)
    {
-      //moveForward(travelDistInches, false);
+      moveForward(travelDistInches, false);
    }
    else if(travelDistInches < -DRIVE_THRESHOLD)
    {
