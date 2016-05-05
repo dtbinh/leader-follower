@@ -10,7 +10,7 @@
 
 #include <stdbool.h>
 
-// Moves forwrad a set distance at either 80% or 40% PWM
+// Moves forward a set distance at either 80% or 40% PWM
 void moveForward(const unsigned int inches,
                  const bool fast);
 
