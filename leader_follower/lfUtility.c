@@ -18,6 +18,8 @@
 // The number of SysTick ticks per second used for the SysTick interrupt.
 #define SYSTICKS_PER_SECOND     1000
 
+# define CM_PER_INCH     2.54
+
 // The number of milliseconds elapsed since the start of the program.
 static volatile unsigned long gblMillis = 0;
 
@@ -54,6 +56,27 @@ unsigned int randInterval(unsigned int min, unsigned int max)
     } while (r >= limit);
 
     return min + (r / buckets);
+}
+
+float inchesToCm(float inches)
+{
+   float cm;
+   cm = inches * CM_PER_INCH;
+
+   return cm;
+}
+
+float cmToInches(float cm)
+{
+   float inches;
+   inches = cm / CM_PER_INCH;
+
+   return inches;
+}
+
+int intFloor(double x)
+{
+    return (int)(x+100000) - 100000;
 }
 
 void lfUtilInit()

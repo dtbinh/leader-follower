@@ -32,6 +32,17 @@ void sleep(const unsigned int millis);
 // Returns in the half-open interval [min, max]
 unsigned int randInterval(unsigned int min, unsigned int max);
 
+// Converts inches to centimeters
+float inchesToCm(float inches);
+
+// Converts centimeters to inches
+float cmToInches(float cm);
+
+// Performs a floor() operation on the given double.
+// This function supports positive and negative numbers
+// between +/-100,000
+int intFloor(double x);
+
 // Initialize the utility functions.
 void lfUtilInit();
 
