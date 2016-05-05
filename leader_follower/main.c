@@ -18,14 +18,16 @@
 #include "lfSound.h"
 #include "lfUtility.h"
 #include "lfWanderBehavior.h"
+#include "lfFollowBehavior.h"
+#include "lfSearchBehavior.h"
 
 /****************************************************************
  * These two preprocessors dictate which binary you are building.
  * They are mutually exclusive options preprocessors. Only one of
  * them should be uncommented at a time.
  * **************************************************************/
-#define LEADER_ROBOT
-//#define FOLLOWER_ROBOT
+//#define LEADER_ROBOT
+#define FOLLOWER_ROBOT
 
 // Number of system ticks per second
 #define TICKS_PER_SECOND 100
@@ -132,11 +134,11 @@ void runStateMachine(void *pvParam)
 
    if(gblDisplayArgs.state == FOLLOW)
    {
-      //follow();
+      follow();
    }
    else if(gblDisplayArgs.state == SEARCH)
    {
-      //search();
+      search();
    }
 
    // change states ever 10 seconds for verification

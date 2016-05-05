@@ -57,6 +57,8 @@ ${COMPILER}/leader_follower.axf: ${COMPILER}/lfMotors.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfSensors.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfUtility.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfWanderBehavior.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/lfFollowBehavior.o
+${COMPILER}/leader_follower.axf: ${COMPILER}/lfSearchBehavior.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/lfSound.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/sound_array.o
 ${COMPILER}/leader_follower.axf: ${COMPILER}/sound_array_ti.o
