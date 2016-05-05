@@ -2,6 +2,9 @@
 //
 // main.c - leader_follower
 //
+// Authors: Chris Olson and Chris May
+// Date: 5/5/2016
+//
 //****************************************************************************
 
 #include <stdbool.h>
