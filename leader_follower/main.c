@@ -4,6 +4,8 @@
 //
 //****************************************************************************
 
+#include <stdbool.h>
+
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_ints.h"
@@ -118,39 +120,71 @@ static void pollAvgSensorVal(IrDistance * const leftDist,
    lfSensorsMapDistance(irRightVal, rightDist);
 }
 
+//
+static bool isLeaderLost()
+{
+   if(gblDisplayArgs.distanceL > DIST_50 &&
+         gblDisplayArgs.distanceR > DIST_50)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+static bool isLeaderFound()
+{
+   return !isLeaderLost();
+}
+
 
 // State machine implementing run-time logic for the follower robot (scheduled task)
 // This function must not sleep.
 void runStateMachine(void *pvParam)
 {
-   // always check distance
+   // Poll the IR sensors
    IrDistance leftDist;
    IrDistance rightDist;
    pollAvgSensorVal(&leftDist, &rightDist);
 
-   // update display args
+   // Update display args
    gblDisplayArgs.distanceL = leftDist;
    gblDisplayArgs.distanceR = rightDist;
 
    if(gblDisplayArgs.state == FOLLOW)
    {
-      follow();
+      // Check if the follower robot has lost track of the leader.
+      if(isLeaderLost())
+      {
+         // The follower has lost track of the leader.
+         // Start searching for the leader.
+         lfPlaySound(SEARCH);
+         gblDisplayArgs.state = SEARCH;
+      }
+      else
+      {
+         // Follow the leader.
+         follow(&gblDisplayArgs);
+      }
    }
    else if(gblDisplayArgs.state == SEARCH)
    {
-      search();
+      // Check if the follower robot has found the leader.
+      if(isLeaderFound())
+      {
+         // The follower robot has found the leader.
+         // Start to follow the leader.
+         lfPlaySound(FOLLOW);
+         gblDisplayArgs.state = FOLLOW;
+      }
+      else
+      {
+         // Search for the leader.
+         search(&gblDisplayArgs);
+      }
    }
-
-   // change states ever 10 seconds for verification
-// static unsigned long lastChange = 0;
-// if(SchedulerElapsedTicksGet(lastChange) > (TICKS_PER_SECOND * 10))
-// {
-//    lastChange = SchedulerTickCountGet();
-//
-//    state = (state == FOLLOW) ? SEARCH : FOLLOW;
-//
-//    lfPlaySound(state);
-// }
 }
 #endif
 
