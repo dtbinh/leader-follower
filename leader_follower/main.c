@@ -41,7 +41,7 @@
 static void runStateMachine(void *pvParam);
 
 // Arguments to display at every scheduled display task.
-static DisplayArgs gblDisplayArgs =
+static volatile DisplayArgs gblDisplayArgs =
 {
    // Current state of the robot's autonomy state machine
    .state = SEARCH,
@@ -126,8 +126,8 @@ static void pollAvgSensorVal(IrDistance * const leftDist,
 //
 static bool isLeaderLost()
 {
-   if(gblDisplayArgs.distanceL > DIST_50 &&
-         gblDisplayArgs.distanceR > DIST_50)
+   if(gblDisplayArgs.distanceL > DIST_70 &&
+         gblDisplayArgs.distanceR > DIST_70)
    {
       return true;
    }
@@ -196,11 +196,7 @@ void runStateMachine(void *pvParam)
 // This function must not sleep.
 void runStateMachine(void *pvParam)
 {
-   // TODO: The leader robot only has one state
-   if (gblDisplayArgs.state == WANDER)
-   {
-      wander();
-   }
+   wander();
 }
 #endif
 

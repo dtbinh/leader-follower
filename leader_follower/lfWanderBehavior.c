@@ -24,7 +24,7 @@ void wander(void)
    {
       // Obtain a random distance to travel
       unsigned int randDistance = randInterval(1, 10);
-      moveForward(randDistance, true);
+      moveForward(randDistance, false);
    }
    // Backup a random distance
    else

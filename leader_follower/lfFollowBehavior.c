@@ -83,11 +83,11 @@ void follow(DisplayArgs * const args)
    // and moveBackward() methods only expect positive numbers.
    if(travelDistInches > DRIVE_THRESHOLD)
    {
-      moveForward(travelDistInches, false);
+      moveForward(travelDistInches, true);
    }
    else if(travelDistInches < -DRIVE_THRESHOLD)
    {
-      moveBackward(-travelDistInches, false);
+      moveBackward(-travelDistInches, true);
    }
    else
    {
